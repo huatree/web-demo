@@ -61,7 +61,7 @@
       },
       computed: {
         getMsg() {
-          console.log('fun getMsg', this.msg)
+          console.log('子 func getMsg', this.msg)
           let res = {
             test: '123',
             ...this.msg
@@ -76,12 +76,13 @@
       components: { soncom },
       data() {
         return {
-          msgA: 'default',
-          msgB: 'default'
+          msgA: '',
+          msgB: ''
         }
       },
       computed: {
         queryMsg() {
+          console.log('父 func queryMsg', this.msgA, this.msgB)
           return {
             one: this.msgA,
             two: this.msgB
@@ -89,21 +90,26 @@
         }
       },
       created() {
-        console.log('son created')
+        console.log('父 created')
         this.init()
       },
       activated() {
-        console.log('son activated')
+        console.log('父 activated')
         // this.init()
       },
       methods: {
         init() {
-          setTimeout(() => {
-            this.msgA = '1'
-            setTimeout(() => {
-              this.msgB = '2'
-            }, 1000)
-          }, 1000)
+          let that = this
+          let promise = new Promise(function (resolve, reject) {
+            console.log('父 Promise')
+            that.msgA = '1'
+            resolve()
+          })
+
+          promise.then(function () {
+            console.log('父 resolved.')
+            that.msgB = '2'
+          })
         }
       }
     }
