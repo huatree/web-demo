@@ -33,25 +33,78 @@
     </div>
 
     <template id="com1">
-      <div>路由1</div>
+      <div>
+        <div>路由1</div>
+        <soncom :msg="queryMsg"></soncom>
+      </div>
+    </template>
+
+    <template id="soncom">
+      <div>
+        <div>路由1 > 子组件</div>
+        <div>{{ getMsg }}</div>
+      </div>
     </template>
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.5.4/vue-router.js"></script>
   <script>
+    const soncom = {
+      template: '#soncom',
+      props: {
+        msg: {
+          type: Object,
+          default() {
+            return {}
+          }
+        }
+      },
+      computed: {
+        getMsg() {
+          console.log('fun getMsg', this.msg)
+          let res = {
+            test: '123',
+            ...this.msg
+          }
+          return res
+        }
+      }
+    }
     // 1. 定义（路由）组件。
     const com1 = {
       template: '#com1',
+      components: { soncom },
       data() {
         return {
-          msg: 'kk'
+          msgA: 'default',
+          msgB: 'default'
+        }
+      },
+      computed: {
+        queryMsg() {
+          return {
+            one: this.msgA,
+            two: this.msgB
+          }
         }
       },
       created() {
         console.log('son created')
+        this.init()
       },
       activated() {
         console.log('son activated')
+        // this.init()
+      },
+      methods: {
+        init() {
+          setTimeout(() => {
+            this.msgA = '1'
+            setTimeout(() => {
+              this.msgB = '2'
+            }, 1000)
+          }, 1000)
+        }
       }
     }
     const com2 = { template: '<div>路由2</div>' }
